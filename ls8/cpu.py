@@ -39,11 +39,23 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
+
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        elif op == "CMP":
+            op_a = self.reg[reg_a]
+            op_b = self.reg[reg_b]
+            # self.alu('CMP', operand_a, operand_b)
+            if op_a == op_b:
+                self.fl = 0b00000001
+            elif op_a > op_b:
+                self.fl = 0b00000010
+            elif op_a < op_b:
+                self.fl = 0b00000100
         else:
             raise Exception("Unsupported ALU operation")
-    
+
     #provided
     def trace(self):
         """
@@ -145,14 +157,7 @@ class CPU:
                 SP += 1
 
             elif IR == CMP:
-                reg_a = self.reg[operand_a]
-                reg_b = self.reg[operand_b]
-                if reg_a == reg_b:
-                    self.fl = 0b00000001
-                elif reg_a > reg_b:
-                    self.fl = 0b00000010
-                elif reg_a < reg_b:
-                    self.fl = 0b00000100
+                self.alu('CMP', operand_a, operand_b) 
                 self.pc += 3
 
             elif IR == JMP:
