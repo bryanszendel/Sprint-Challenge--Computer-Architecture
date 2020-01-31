@@ -227,6 +227,7 @@ Machine code:
 ### CMP
 
 *This is an instruction handled by the ALU.*
+`FL` bits: `00000LGE`
 
 `CMP registerA registerB`
 

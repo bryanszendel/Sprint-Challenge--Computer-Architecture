@@ -10,6 +10,7 @@ class CPU:
         self.pc = 0
         self.ram = [0] * 256
         self.reg = [0] * 8
+        self.fl = 0
         # self.SP = 0
 
     #provided
@@ -82,6 +83,10 @@ class CPU:
         CALL = 0b01010000
         RET = 0b00010001
         ADD = 0b10100000
+        CMP = 0b10100111
+        JMP = 0b01010100
+        JNE = 0b01010110
+        JEQ = 0b01010101
 
         SP = 255
 
@@ -90,6 +95,7 @@ class CPU:
             IR = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
+            # print('IR', IR)
             if IR == LDI:
                 self.reg[operand_a] = operand_b
                 self.pc += 3
@@ -138,7 +144,34 @@ class CPU:
                 self.pc = return_address
                 SP += 1
 
+            elif IR == CMP:
+                reg_a = self.reg[operand_a]
+                reg_b = self.reg[operand_b]
+                if reg_a == reg_b:
+                    self.fl = 0b00000001
+                elif reg_a > reg_b:
+                    self.fl = 0b00000010
+                elif reg_a < reg_b:
+                    self.fl = 0b00000100
+                self.pc += 3
+
+            elif IR == JMP:
+                reg = self.reg[operand_a]
+                self.pc = reg
             
+            elif IR == JNE:
+                if self.fl == 0b00000000 or self.fl == 0b00000010 or self.fl == 0b00000100:
+                    reg = self.reg[operand_a]
+                    self.pc = reg
+                else:
+                    self.pc += 2
+            
+            elif IR == JEQ:
+                if self.fl == 0b00000001:
+                    reg = self.reg[operand_a]
+                    self.pc = reg
+                else:
+                    self.pc += 2
 
             # if op == 'ADD':
             #     operand_a + operand_b
